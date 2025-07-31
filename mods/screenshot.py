@@ -1,3 +1,7 @@
+
+import io
+import pyscreenshot
+
 class SCREENSHOT:
 
     SC_DATA = b""

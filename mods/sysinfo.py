@@ -1,5 +1,11 @@
 
 
+
+import tabulate
+import platform
+import psutil
+from datetime import datetime
+
 class SYSINFO:
 
     DATA_STRING = ""
